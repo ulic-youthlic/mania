@@ -9,6 +9,7 @@ edition.workspace = true
 mania-macros = { path = "../mania-macros" }
 mania-codec = { path = "../mania-codec" }
 arc-swap = { version = "1.7.1", features = ["serde"] }
+block-buffer = { version = "=0.11.0-rc.3" }                  # FIXME: This is a temporary solution, See: https://github.com/cot-rs/cot/issues/196
 byteorder = "1.5.0"
 bytes.workspace = true
 chrono = { version = "0.4.39", features = ["serde"] }

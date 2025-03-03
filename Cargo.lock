@@ -1327,6 +1327,7 @@ version = "0.0.1"
 dependencies = [
  "anyhow",
  "arc-swap",
+ "block-buffer 0.11.0-rc.3",
  "byteorder",
  "bytes",
  "chrono",
