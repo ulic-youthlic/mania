@@ -322,7 +322,9 @@ impl BusinessHandle {
         video: &mut VideoEntity,
     ) -> ManiaResult<()> {
         self.prepare_highway().await?;
-        let (vs, is) = video.resolve_stream().await;
+        let (vs, is) = video.resolve_stream().await.map_err(|e| {
+            ManiaError::GenericError(Cow::from(format!("Resolve stream error: {:?}", e)))
+        })?;
         let vs = vs.ok_or(ManiaError::GenericError(Cow::from("No video stream found")))?;
         let is = is.ok_or(ManiaError::GenericError(Cow::from("No image stream found")))?;
         let (file_md5, file_sha1, file_stream_sha1, thumb_md5, thumb_sha1) =
@@ -466,7 +468,9 @@ impl BusinessHandle {
         video: &mut VideoEntity,
     ) -> ManiaResult<()> {
         self.prepare_highway().await?;
-        let (vs, is) = video.resolve_stream().await;
+        let (vs, is) = video.resolve_stream().await.map_err(|e| {
+            ManiaError::GenericError(Cow::from(format!("Resolve stream error: {:?}", e)))
+        })?;
         let vs = vs.ok_or(ManiaError::GenericError(Cow::from("No video stream found")))?;
         let is = is.ok_or(ManiaError::GenericError(Cow::from("No image stream found")))?;
         let (file_md5, file_sha1, file_stream_sha1, thumb_md5, thumb_sha1) =
