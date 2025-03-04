@@ -225,6 +225,7 @@ mod prelude {
     pub use crate::message::chain::{ClientSequence, MessageId};
     pub use crate::message::entity::{MessageContentImpl, MessageEntity};
     pub use crate::utility::compress::*;
+    pub use crate::utility::extensions::HexString;
     pub use bytes::Bytes;
     pub use chrono::{DateTime, Utc};
     pub use mania_macros::pack_content;

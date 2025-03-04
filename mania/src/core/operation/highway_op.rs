@@ -24,6 +24,7 @@ use crate::core::protos::service::highway::{
 use crate::message::entity::image::ImageEntity;
 use crate::message::entity::record::RecordEntity;
 use crate::message::entity::video::VideoEntity;
+use crate::utility::extensions::HexString;
 use crate::utility::image_resolver::{ImageFormat, resolve_image_metadata};
 use crate::utility::stream_helper::{mut_stream_ctx, stream_pipeline};
 use crate::{ManiaError, ManiaResult, dda};
@@ -114,7 +115,7 @@ impl BusinessHandle {
                 size: image.size,
                 name: image.file_path.clone().unwrap_or_else(|| format!(
                     "{}.{}",
-                    hex::encode(&sha1),
+                    &sha1.hex(),
                     iv.0
                 )),
                 md5,
@@ -149,8 +150,8 @@ impl BusinessHandle {
                 .info
                 .as_ref()
                 .ok_or(ManiaError::GenericError(Cow::from("No info in response")))?;
-            let sha1 = hex::decode(&info.file_sha1).map_err(HighwayError::HexError)?;
-            let md5 = hex::decode(&info.file_hash).map_err(HighwayError::HexError)?;
+            let sha1 = info.file_sha1.unhex().map_err(HighwayError::HexError)?;
+            let md5 = info.file_hash.unhex().map_err(HighwayError::HexError)?;
             let extend = Ntv2RichMediaHighwayExt {
                 file_uuid: index_node.file_uuid.to_owned(),
                 u_key: res.res.u_key.to_owned().unwrap(),
@@ -202,7 +203,7 @@ impl BusinessHandle {
                 size: image.size,
                 name: image.file_path.clone().unwrap_or_else(|| format!(
                     "{}.{}",
-                    hex::encode(&sha1),
+                    &sha1.hex(),
                     iv.0
                 )),
                 md5,
@@ -237,8 +238,8 @@ impl BusinessHandle {
                 .info
                 .as_ref()
                 .ok_or(ManiaError::GenericError(Cow::from("No info in response")))?;
-            let sha1 = hex::decode(&info.file_sha1).map_err(HighwayError::HexError)?;
-            let md5 = hex::decode(&info.file_hash).map_err(HighwayError::HexError)?;
+            let sha1 = info.file_sha1.unhex().map_err(HighwayError::HexError)?;
+            let md5 = info.file_hash.unhex().map_err(HighwayError::HexError)?;
             let extend = Ntv2RichMediaHighwayExt {
                 file_uuid: index_node.file_uuid.to_owned(),
                 u_key: res.res.u_key.to_owned().unwrap(),
@@ -333,14 +334,14 @@ impl BusinessHandle {
                 video_name: video
                     .video_path
                     .clone()
-                    .unwrap_or_else(|| { format!("{}.mp4", hex::encode(&file_sha1)) }),
+                    .unwrap_or_else(|| { format!("{}.mp4", &file_sha1.hex()) }),
                 video_md5: file_md5,
                 video_sha1: file_sha1,
                 thumb_size: video.video_thumb_size as u32,
                 thumb_name: video
                     .video_thumb_path
                     .clone()
-                    .unwrap_or_else(|| { format!("{}.jpg", hex::encode(&thumb_sha1)) }),
+                    .unwrap_or_else(|| { format!("{}.jpg", &thumb_sha1.hex()) }),
                 thumb_md5,
                 thumb_sha1,
                 thumb_width: video.video_thumb_width as u32,
@@ -371,7 +372,7 @@ impl BusinessHandle {
                 .info
                 .as_ref()
                 .ok_or(ManiaError::GenericError(Cow::from("No info in response")))?;
-            let md5 = hex::decode(&info.file_hash).map_err(HighwayError::HexError)?;
+            let md5 = info.file_hash.unhex().map_err(HighwayError::HexError)?;
             let extend = Ntv2RichMediaHighwayExt {
                 file_uuid: index_node.file_uuid.to_owned(),
                 u_key: res.res.u_key.to_owned().unwrap(),
@@ -423,8 +424,8 @@ impl BusinessHandle {
                 .info
                 .as_ref()
                 .ok_or(ManiaError::GenericError(Cow::from("No info in response")))?;
-            let md5 = hex::decode(&info.file_hash).map_err(HighwayError::HexError)?;
-            let sha1 = hex::decode(&info.file_sha1).map_err(HighwayError::HexError)?;
+            let sha1 = info.file_sha1.unhex().map_err(HighwayError::HexError)?;
+            let md5 = info.file_hash.unhex().map_err(HighwayError::HexError)?;
             let size = video.video_thumb_size as u32;
             let extend = Ntv2RichMediaHighwayExt {
                 file_uuid: index.file_uuid.to_owned(),
@@ -477,14 +478,14 @@ impl BusinessHandle {
                 video_name: video
                     .video_path
                     .clone()
-                    .unwrap_or_else(|| { format!("{}.mp4", hex::encode(&file_sha1)) }),
+                    .unwrap_or_else(|| { format!("{}.mp4", &file_sha1.hex()) }),
                 video_md5: file_md5,
                 video_sha1: file_sha1,
                 thumb_size: video.video_thumb_size as u32,
                 thumb_name: video
                     .video_thumb_path
                     .clone()
-                    .unwrap_or_else(|| { format!("{}.jpg", hex::encode(&thumb_sha1)) }),
+                    .unwrap_or_else(|| { format!("{}.jpg", &thumb_sha1.hex()) }),
                 thumb_md5,
                 thumb_sha1,
                 thumb_width: video.video_thumb_width as u32,
@@ -515,7 +516,7 @@ impl BusinessHandle {
                 .info
                 .as_ref()
                 .ok_or(ManiaError::GenericError(Cow::from("No info in response")))?;
-            let md5 = hex::decode(&info.file_hash).map_err(HighwayError::HexError)?;
+            let md5 = info.file_hash.unhex().map_err(HighwayError::HexError)?;
             let extend = Ntv2RichMediaHighwayExt {
                 file_uuid: index_node.file_uuid.to_owned(),
                 u_key: res.res.u_key.to_owned().unwrap(),
@@ -567,8 +568,8 @@ impl BusinessHandle {
                 .info
                 .as_ref()
                 .ok_or(ManiaError::GenericError(Cow::from("No info in response")))?;
-            let md5 = hex::decode(&info.file_hash).map_err(HighwayError::HexError)?;
-            let sha1 = hex::decode(&info.file_sha1).map_err(HighwayError::HexError)?;
+            let sha1 = info.file_sha1.unhex().map_err(HighwayError::HexError)?;
+            let md5 = info.file_hash.unhex().map_err(HighwayError::HexError)?;
             let size = video.video_thumb_size as u32;
             let extend = Ntv2RichMediaHighwayExt {
                 file_uuid: index.file_uuid.to_owned(),
@@ -708,7 +709,7 @@ impl BusinessHandle {
                 name: record
                     .file_path
                     .clone()
-                    .unwrap_or_else(|| format!("{}.amr", hex::encode(&md5))),
+                    .unwrap_or_else(|| format!("{}.amr", &md5.hex())),
                 md5,
                 sha1,
             },
@@ -735,8 +736,8 @@ impl BusinessHandle {
                 .info
                 .as_ref()
                 .ok_or(ManiaError::GenericError(Cow::from("No info in response")))?;
-            let sha1 = hex::decode(&info.file_sha1).map_err(HighwayError::HexError)?;
-            let md5 = hex::decode(&info.file_hash).map_err(HighwayError::HexError)?;
+            let sha1 = info.file_sha1.unhex().map_err(HighwayError::HexError)?;
+            let md5 = info.file_hash.unhex().map_err(HighwayError::HexError)?;
             let extend = Ntv2RichMediaHighwayExt {
                 file_uuid: index_node.file_uuid.to_owned(),
                 u_key: res.res.u_key.to_owned().unwrap(),
@@ -796,7 +797,7 @@ impl BusinessHandle {
                 name: record
                     .file_path
                     .clone()
-                    .unwrap_or_else(|| format!("{}.mp3", hex::encode(&sha1))),
+                    .unwrap_or_else(|| format!("{}.mp3", &sha1.hex())),
                 md5,
                 sha1,
             }
@@ -823,8 +824,8 @@ impl BusinessHandle {
                 .info
                 .as_ref()
                 .ok_or(ManiaError::GenericError(Cow::from("No info in response")))?;
-            let sha1 = hex::decode(&info.file_sha1).map_err(HighwayError::HexError)?;
-            let md5 = hex::decode(&info.file_hash).map_err(HighwayError::HexError)?;
+            let sha1 = info.file_sha1.unhex().map_err(HighwayError::HexError)?;
+            let md5 = info.file_hash.unhex().map_err(HighwayError::HexError)?;
             let extend = Ntv2RichMediaHighwayExt {
                 file_uuid: index_node.file_uuid.to_owned(),
                 u_key: res.res.u_key.to_owned().unwrap(),

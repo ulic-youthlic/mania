@@ -11,6 +11,7 @@ use crate::core::http;
 use crate::core::session::QrSign;
 use crate::event::system::SystemEvent;
 use crate::event::system::bot_online::BotOnlineEvent;
+use crate::utility::extensions::HexString;
 use crate::{KeyStore, ManiaError, ManiaResult};
 use bytes::Bytes;
 use std::borrow::Cow;
@@ -193,7 +194,7 @@ impl BusinessHandle {
         tracing::info!("Online success");
         tracing::debug!(
             "d2key: {:?}",
-            hex::encode(**self.context.key_store.session.d2_key.load())
+            (**self.context.key_store.session.d2_key.load()).hex()
         );
         self.event_dispatcher
             .system

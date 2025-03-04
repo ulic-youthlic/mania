@@ -113,7 +113,7 @@ impl MessageEntity for ImageEntity {
                     height: index.info.as_ref()?.height,
                     width: index.info.as_ref()?.width,
                     file_path: Some(index.info.as_ref()?.file_name.clone()),
-                    md5: Bytes::from(hex::decode(&index.info.as_ref()?.file_hash).ok()?),
+                    md5: Bytes::from(index.info.as_ref()?.file_hash.unhex().ok()?),
                     size: index.info.as_ref()?.file_size,
                     msg_info: Some(extra.clone()),
                     sub_type: ext_biz_info.pic.as_ref()?.biz_type,

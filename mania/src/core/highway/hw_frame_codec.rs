@@ -1,4 +1,5 @@
 use crate::core::highway::HighwayError;
+use crate::utility::extensions::HexString;
 use bytes::{Buf, BufMut, Bytes, BytesMut};
 use std::fmt::Debug;
 use tokio_util::codec::{Decoder, Encoder};
@@ -11,8 +12,8 @@ pub struct HighwayFrame {
 impl Debug for HighwayFrame {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         f.debug_struct("HighwayFrame")
-            .field("head", &hex::encode(self.head.clone()))
-            .field("body", &hex::encode(self.body.clone()))
+            .field("head", &self.head.hex())
+            .field("body", &self.body.hex())
             .finish()
     }
 }

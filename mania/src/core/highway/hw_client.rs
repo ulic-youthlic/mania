@@ -6,6 +6,7 @@ use crate::core::protos::service::highway::{
     DataHighwayHead, LoginSigHead, ReqDataHighwayHead, RespDataHighwayHead, SegHead,
 };
 use crate::dda;
+use crate::utility::extensions::HexString;
 use bytes::{Bytes, BytesMut};
 use futures::SinkExt;
 use futures::StreamExt;
@@ -33,13 +34,13 @@ pub struct HighwaySession {
 impl Debug for HighwaySession {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         f.debug_struct("HighwaySession")
-            .field("ticket", &hex::encode(self.ticket.clone()))
+            .field("ticket", &self.ticket.hex())
             .field("uin", &self.uin)
             .field("cmd", &self.cmd)
             .field("command", &self.command)
-            .field("file_md5", &hex::encode(self.file_md5.clone()))
+            .field("file_md5", &self.file_md5.hex())
             .field("file_size", &self.file_size)
-            .field("ext", &hex::encode(self.ext.clone()))
+            .field("ext", &self.ext.hex())
             .finish()
     }
 }

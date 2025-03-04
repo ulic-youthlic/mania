@@ -63,8 +63,8 @@ impl ClientEvent for VideoC2CUploadEvent {
                     UploadInfo {
                         file_info: Some(FileInfo {
                             file_size: self.req.video_size,
-                            file_hash: hex::encode(self.req.video_md5.clone()),
-                            file_sha1: hex::encode(self.req.video_sha1.clone()),
+                            file_hash: self.req.video_md5.hex(),
+                            file_sha1: self.req.video_sha1.hex(),
                             file_name: self.req.video_name.to_owned(),
                             r#type: Some(FileType {
                                 r#type: 2,
@@ -82,8 +82,8 @@ impl ClientEvent for VideoC2CUploadEvent {
                     UploadInfo {
                         file_info: Some(FileInfo {
                             file_size: self.req.thumb_size,
-                            file_hash: hex::encode(self.req.thumb_md5.clone()),
-                            file_sha1: hex::encode(self.req.thumb_sha1.clone()),
+                            file_hash: self.req.thumb_md5.hex(),
+                            file_sha1: self.req.thumb_sha1.hex(),
                             file_name: self.req.thumb_name.to_owned(),
                             r#type: Some(FileType {
                                 r#type: 1,

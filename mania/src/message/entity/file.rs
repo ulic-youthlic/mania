@@ -66,7 +66,7 @@ impl MessageEntity for FileEntity {
                 let extra = GroupFileExtra::decode(data).ok()?.inner?.info?;
                 Some(dda!(Self {
                     file_size: extra.file_size,
-                    file_md5: Bytes::from(hex::decode(&extra.file_md5).ok()?),
+                    file_md5: Bytes::from(extra.file_md5.unhex().ok()?),
                     file_name: extra.file_name,
                     extra: Some(FileUnique::Group(FileGroupUnique {
                         file_id: Some(extra.file_id.to_owned()),

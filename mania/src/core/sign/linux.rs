@@ -1,5 +1,6 @@
 use crate::core::http;
 use crate::core::sign::{SignProvider, SignResult};
+use crate::utility::extensions::HexString;
 use bytes::Bytes;
 use reqwest::header::HeaderMap;
 use serde::{Deserialize, Serialize};
@@ -36,7 +37,7 @@ impl SignProvider for LinuxSignProvider {
                 let request_body = SignServerReq {
                     cmd: cmd.to_string(),
                     seq,
-                    src: hex::encode(body),
+                    src: body.hex(),
                 };
                 let payload = match serde_json::to_vec(&request_body) {
                     Ok(payload) => payload,

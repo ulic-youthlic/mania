@@ -275,7 +275,7 @@ impl MessageEntity for VideoEntity {
     fn unpack_element(elem: &Elem) -> Option<Self> {
         elem.video_file.as_ref().map(|video_file| {
             dda!(Self {
-                video_hash: hex::encode(&video_file.file_md5),
+                video_hash: video_file.file_md5.hex(),
                 height: video_file.file_height,
                 width: video_file.file_width,
                 video_size: video_file.file_size,

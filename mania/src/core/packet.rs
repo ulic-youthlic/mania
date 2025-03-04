@@ -14,6 +14,7 @@ use crate::core::crypto::tea;
 use crate::core::protos::service::oidb::{OidbLafter, OidbSvcTrpcTcpBase};
 use crate::core::protos::system::{NtDeviceSign, NtPacketUid, Sign};
 use crate::dda;
+use crate::utility::extensions::HexString;
 
 #[repr(u8)]
 #[derive(Debug, Copy, Clone, PartialEq)]
@@ -125,7 +126,7 @@ impl Debug for SsoPacket {
             .field("packet_type", &self.packet_type)
             .field("command", &self.command)
             .field("sequence", &self.sequence)
-            .field("payload", &hex::encode(&self.payload.0))
+            .field("payload", &self.payload.0.hex())
             .finish()
     }
 }
@@ -208,7 +209,7 @@ impl SsoPacket {
                     .section(|p| p.bytes(&ctx.key_store.session.tgt.load())) // tgt
                     .section(|p| p.string(&self.command)) // command
                     .section(|p| p) // unknown
-                    .section(|p| p.string(&hex::encode(ctx.device.uuid))) // uuid
+                    .section(|p| p.string(&ctx.device.uuid.hex())) // uuid
                     .section(|p| p) // unknown
                     .section_16(|p| p.string(ctx.app_info.current_version)) // version
                     .section(|signature| {

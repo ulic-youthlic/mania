@@ -1,4 +1,5 @@
 use crate::core::context::Protocol;
+use crate::utility::extensions::HexString;
 use bytes::Bytes;
 use phf::{Set, phf_set};
 use serde::{Deserialize, Deserializer};
@@ -60,9 +61,7 @@ where
     D: Deserializer<'de>,
 {
     let str = String::deserialize(deserializer)?;
-    Ok(Bytes::from(
-        hex::decode(str).map_err(serde::de::Error::custom)?,
-    ))
+    Ok(Bytes::from(str.unhex().map_err(serde::de::Error::custom)?))
 }
 
 pub trait SignProvider: Send + Sync {

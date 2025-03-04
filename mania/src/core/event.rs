@@ -133,6 +133,7 @@ pub(crate) mod prelude {
         PacketBuilder, PacketError, PacketReader, PacketType,
     };
     pub use crate::dda;
+    pub use crate::utility::extensions::HexString;
     pub use bytes::Bytes;
     pub use inventory;
     pub use mania_macros::{DummyEvent, ServerEvent, command, oidb_command};

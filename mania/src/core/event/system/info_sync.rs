@@ -28,7 +28,7 @@ impl ClientEvent for InfoSyncEvent {
             }),
             normal_config: Some(NormalConfig::default()),
             register_info: Some(RegisterInfo {
-                guid: hex::encode(ctx.device.uuid),
+                guid: ctx.device.uuid.hex(),
                 kick_pc: 0,
                 current_version: ctx.app_info.current_version.parse().unwrap(),
                 is_first_register_proxy_online: 1,

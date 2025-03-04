@@ -72,7 +72,7 @@ impl MessageEntity for RecordEntity {
                     &index.info.as_ref()?.file_hash,
                 );
                 {
-                    let md5 = Bytes::from(hex::decode(sha1).ok()?);
+                    let md5 = Bytes::from(sha1.unhex().ok()?);
                     Some(dda!(Self {
                         audio_uuid: Some(uuid.to_owned()),
                         audio_name: name.to_owned(),

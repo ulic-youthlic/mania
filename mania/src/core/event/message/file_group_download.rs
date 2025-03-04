@@ -34,7 +34,7 @@ impl ClientEvent for FileGroupDownloadEvent {
                 let url = format!(
                     "https://{}/ftn_handler/{}/?fname=",
                     download.download_dns,
-                    hex::encode(download.download_url)
+                    download.download_url.hex()
                 );
                 Ok(ClientResult::single(Box::new(dda!(Self { file_url: url }))))
             }

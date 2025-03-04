@@ -58,8 +58,8 @@ impl ClientEvent for ImageGroupUploadEvent {
                 upload_info: vec![UploadInfo {
                     file_info: Some(FileInfo {
                         file_size: self.req.size,
-                        file_hash: hex::encode(self.req.md5.clone()),
-                        file_sha1: hex::encode(self.req.sha1.clone()),
+                        file_hash: self.req.md5.hex(),
+                        file_sha1: self.req.sha1.hex(),
                         file_name: self.req.name.to_owned(),
                         r#type: Some(FileType {
                             r#type: 1,
