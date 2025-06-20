@@ -8,18 +8,21 @@ info:
     @echo GREP PATH: `which grep`
     @echo XARGS PATH: `which xargs`
     @echo TYPOS PATH: `which typos`
-    @echo DENO PATH: `which deno`
-    @echo TAPLO PATH: `which taplo`
     @echo SHFMT PATH: `which shfmt`
+    @echo DPRINT PATH: `which dprint`
+    @echo SHELLCHECK PATH `which shellcheck`
 
 check: info typoCheck fmtCheck clippyCheck buildCheck docCheck testCheck
+
+shCheck:
+    shellcheck ./.envrc ./scripts/*
 
 typoCheck:
     typos -c ./typos.toml
 
-fmtCheck: rustFmtCheck justFmtCheck mdFmtCheck tomlFmtCheck ymlFmtCheck shFmtCheck
+fmtCheck: rustFmtCheck justFmtCheck shFmtCheck dprintFmtCheck
 
-fmt: rustFmt justFmt mdFmt tomlFmt ymlFmt shFmt
+fmt: rustFmt justFmt shFmt dprintFmt
 
 buildCheck:
     cargo build --locked
@@ -33,6 +36,12 @@ docCheck:
 testCheck:
     cargo test --locked
 
+dprintFmt:
+    dprint fmt
+
+dprintFmtCheck:
+    dprint check
+
 rustFmtCheck:
     cargo fmt --check
 
@@ -45,29 +54,11 @@ justFmtCheck:
 justFmt:
     just --unstable --fmt
 
-mdFmtCheck:
-    git ls-files | grep -E '^.*\.md$' | xargs deno fmt --check --ext md
-
-mdFmt:
-    git ls-files | grep -E '^.*\.md$' | xargs deno fmt --ext md
-
-ymlFmtCheck:
-    git ls-files | grep -E '^.*\.yml$' | xargs deno fmt --check --ext yml
-
-ymlFmt:
-    git ls-files | grep -E '^.*\.yml$' | xargs deno fmt --ext yml
-
-tomlFmtCheck:
-    git ls-files | grep -E '^.*\.toml$' | xargs taplo format --check
-
-tomlFmt:
-    git ls-files | grep -E '^.*\.toml$' | xargs taplo format
-
 shFmt:
-    git ls-files | grep -E '^scripts/.*$' | xargs shfmt -p -s -i 2 -ci -sr -kp -fn -w
+    git ls-files | grep -E '^scripts/.*$' | xargs shfmt -w -s -i 2
 
 shFmtCheck:
-    git ls-files | grep -E '^scripts/.*$' | xargs shfmt -p -s -i 2 -ci -sr -kp -fn -d
+    git ls-files | grep -E '^scripts/.*$' | xargs shfmt -s -i 2 -d
 
 alias c := check
 alias i := info

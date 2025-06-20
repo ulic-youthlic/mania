@@ -22,6 +22,9 @@
     nix-filter = {
       url = "github:numtide/nix-filter";
     };
+    treefmt-nix = {
+      url = "github:numtide/treefmt-nix";
+    };
   };
 
   outputs =
@@ -33,11 +36,13 @@
       crane,
       advisory-db,
       nix-filter,
+      treefmt-nix,
       ...
     }:
     flake-utils.lib.eachDefaultSystem (
       system:
       let
+        treefmtEval = treefmt-nix.lib.evalModule pkgs ./treefmt.nix;
         pkgs = import nixpkgs {
           localSystem = { inherit system; };
           overlays = [
@@ -151,6 +156,7 @@
           };
       in
       {
+        formatter = treefmtEval.config.build.wrapper;
         packages = {
           mania = craneLib.buildPackage (
             commonArgs
@@ -170,12 +176,11 @@
         };
         checks = {
           inherit (self.packages."${system}") mania;
-          typo = typoCheck;
           audit = craneLib.cargoAudit (commonArgs // { inherit advisory-db; });
           clippy = craneLib.cargoClippy (
             commonArgs // { cargoClippyExtraArgs = "--all-targets -- --deny warnings"; }
           );
-          fmt = fmtCheck;
+          fmt = treefmtEval.config.build.check self;
           doc = craneLib.cargoDoc commonArgs;
           test = craneLib.cargoTest (commonArgs // { src = ./.; });
         };
@@ -192,11 +197,12 @@
             lldb
 
             # fmt
-            taplo
             nixfmt-rfc-style
-            deno
             just
             shfmt
+            typos
+            shellcheck
+            dprint
           ];
           shellHook = '''';
         };
