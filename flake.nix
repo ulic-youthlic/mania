@@ -19,6 +19,9 @@
     flake-compat = {
       url = "github:edolstra/flake-compat";
     };
+    nix-filter = {
+      url = "github:numtide/nix-filter";
+    };
   };
 
   outputs =
@@ -29,50 +32,40 @@
       rust-overlay,
       crane,
       advisory-db,
+      nix-filter,
       ...
     }:
     flake-utils.lib.eachDefaultSystem (
       system:
       let
-        overlays = [ (import rust-overlay) ];
-        pkgs = import nixpkgs { inherit system overlays; };
-        filteredSource =
-          let
-            pathsToIgnore = [
-              ".envrc"
-              ".ignore"
-              ".github"
-              ".gitignore"
-              "rust-toolchain.toml"
-              "README.md"
-              "flake.nix"
-              "flake.lock"
-              "target"
-              "LICENCE"
-              ".direnv"
-            ];
-            ignorePaths =
-              path: type:
-              let
-                inherit (nixpkgs) lib;
-                # split the nix store path into its components
-                components = lib.splitString "/" path;
-                # drop off the `/nix/hash-source` section from the path
-                relPathComponents = lib.drop 4 components;
-                # reassemble the path components
-                relPath = lib.concatStringsSep "/" relPathComponents;
-              in
-              lib.all (p: !(lib.hasPrefix p relPath)) pathsToIgnore;
-          in
-          builtins.path {
-            name = "mania-source";
-            path = toString ./.;
-            # filter out unnecessary paths
-            filter = ignorePaths;
-          };
-        stdenv = if pkgs.stdenv.isLinux then pkgs.stdenv else pkgs.clangStdenv;
-        rustToolchain = pkgs.pkgsBuildHost.rust-bin.fromRustupToolchainFile ./rust-toolchain.toml;
+        pkgs = import nixpkgs {
+          localSystem = { inherit system; };
+          overlays = [
+            (import rust-overlay)
+            self.overlays.default
+          ];
+        };
+        rustToolchain = pkgs.rust-bin.fromRustupToolchainFile ./rust-toolchain.toml;
         craneLib = (crane.mkLib pkgs).overrideToolchain rustToolchain;
+        src =
+          with nix-filter.lib;
+          filter {
+            root = ./.;
+            name = "source";
+            include = [
+              ./mania-codec
+              ./mania
+              ./mania-macros
+              ./examples
+              ./.cargo/config.toml
+              ./Cargo.toml
+              ./Cargo.lock
+            ];
+            exclude = [
+              (matchExt "md")
+              (matchExt "mp3")
+            ];
+          };
         env =
           let
             inherit (pkgs) lib libclang;
@@ -83,28 +76,22 @@
             BINDGEN_EXTRA_CLANG_ARGS = "-isystem ${libclang.lib}/lib/clang/${majorVersion}/include";
             LIBCLANG_PATH = lib.makeLibraryPath [ libclang.lib ];
           };
+        cargoArtifacts = craneLib.buildDepsOnly commonArgs;
         commonArgs = {
-          inherit stdenv env;
-          inherit (craneLib.crateNameFromCargoToml { cargoToml = ./mania/Cargo.toml; }) pname;
-          inherit (craneLib.crateNameFromCargoToml { cargoToml = ./Cargo.toml; }) version;
-          src = filteredSource;
+          inherit env cargoArtifacts;
+          inherit src;
+          pname = "mania";
           strictDeps = true;
-          depsBuildBuild = with pkgs; [
-            protobuf
-            pkg-config
-          ];
-          nativeBuildInputs = with pkgs; [
+          buildInputs = with pkgs; [
             libclang.lib
             openssl.dev
           ];
-          doCheck = false;
-          meta = {
-            mainProgram = "mania";
-            homepage = "https://github.com/LagrangeDev/mania";
-            license = pkgs.lib.licenses.gpl3Only;
-          };
+          nativeBuildInputs = with pkgs; [
+            protobuf
+            pkg-config
+          ];
         };
-        cargoArtifacts = craneLib.buildDepsOnly commonArgs;
+
         typoCheck =
           pkgs.runCommandNoCCLocal "check-typo"
             {
@@ -186,24 +173,18 @@
           typo = typoCheck;
           audit = craneLib.cargoAudit (commonArgs // { inherit advisory-db; });
           clippy = craneLib.cargoClippy (
-            commonArgs
-            // {
-              inherit cargoArtifacts;
-              cargoClippyExtraArgs = "--all-targets -- --deny warnings";
-            }
+            commonArgs // { cargoClippyExtraArgs = "--all-targets -- --deny warnings"; }
           );
           fmt = fmtCheck;
-          doc = craneLib.cargoDoc (commonArgs // { inherit cargoArtifacts; });
-          test = craneLib.cargoTest (commonArgs // { inherit cargoArtifacts; });
+          doc = craneLib.cargoDoc commonArgs;
+          test = craneLib.cargoTest (commonArgs // { src = ./.; });
         };
-        devShells.default = pkgs.mkShell {
-          inherit env;
-          inputsFrom = builtins.attrValues self.checks."${system}";
+        devShells.default = craneLib.devShell {
+          env = env // {
+            RUST_SRC_PATH = "${rustToolchain}/lib/rustlib/src/rust/library";
+          };
+          checks = self.checks.${system};
           packages = with pkgs; [
-            # deps
-            protobuf
-            pkg-config
-
             # dev
             rust-analyzer
             cargo-flamegraph
