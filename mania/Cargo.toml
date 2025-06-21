@@ -1,48 +1,48 @@
 [package]
 name = "mania"
-license-file.workspace = true
 version.workspace = true
 edition.workspace = true
+license-file.workspace = true
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 [dependencies]
-mania-macros = { path = "../mania-macros" }
-mania-codec = { path = "../mania-codec" }
 arc-swap = { version = "1.7.1", features = ["serde"] }
 byteorder = "1.5.0"
 bytes.workspace = true
 chrono = { version = "0.4.41", features = ["serde"] }
 dashmap = "7.0.0-rc2"
+digest = "0.11.0-rc.0"
+elliptic-curve = "0.14.0-rc.6"
 flate2 = "1.1.2"
+futures = "0.3.31"
 generic-array = "1.2.0"
+hex.workspace = true
+image = "0.25.6"
+inventory = "0.3.20"
+log = "0.4.27"
+mania-codec = { path = "../mania-codec" }
+mania-macros = { path = "../mania-macros" }
+md-5.workspace = true
+noise = "0.9.0"
+num_enum.workspace = true
+once_cell = "1.21.3"
+p256 = { version = "0.14.0-pre.6", features = ["ecdh"] }
 phf = { version = "0.12.1", features = ["macros"] }
 prost = "0.14.1"
+quick-xml = { version = "0.37.5", features = ["serialize"] }
 rand = "0.9.1"
+rand_chacha = "0.9.0"
+regex = "1.11.1"
+reqwest = "0.12.20"
 serde = { version = "1.0.219", features = ["derive"] }
+serde_json = "1.0.140"
+sha1 = "0.11.0-rc.0"
 surge-ping = "0.8.2"
 thiserror.workspace = true
 tokio.workspace = true
+tokio-util = "0.7.15"
 tracing.workspace = true
 uuid.workspace = true
-hex.workspace = true
-reqwest = "0.12.20"
-serde_json = "1.0.140"
-futures = "0.3.31"
-inventory = "0.3.20"
-once_cell = "1.21.3"
-p256 = { version = "0.14.0-pre.6", features = ["ecdh"] }
-md-5.workspace = true
-elliptic-curve = "0.14.0-rc.6"
-log = "0.4.27"
-rand_chacha = "0.9.0"
-num_enum.workspace = true
-quick-xml = { version = "0.37.5", features = ["serialize"] }
-regex = "1.11.1"
-tokio-util = "0.7.15"
-sha1 = "0.11.0-rc.0"
-digest = "0.11.0-rc.0"
-image = "0.25.6"
-noise = "0.9.0"
 
 [build-dependencies]
 prost-build = "0.14.1"

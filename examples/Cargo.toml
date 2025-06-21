@@ -1,19 +1,19 @@
 [package]
 name = "mania-examples"
-description = "examples for mania"
 version.workspace = true
 edition.workspace = true
 license-file.workspace = true
+description = "examples for mania"
 
 [dependencies]
-mania = { path = "../mania" }
-tracing.workspace = true
-tracing-subscriber = { version = "0.3.19", features = ["env-filter"] }
-console-subscriber = { version = "0.4.1", optional = true }
-tokio.workspace = true
-uuid.workspace = true
 cfg-if = "1.0.0"
+console-subscriber = { version = "0.4.1", optional = true }
+mania = { path = "../mania" }
+tokio.workspace = true
+tracing.workspace = true
 tracing-appender = "0.2.3"
+tracing-subscriber = { version = "0.3.19", features = ["env-filter"] }
+uuid.workspace = true
 
 [features]
 default = []
