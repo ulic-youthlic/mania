@@ -96,64 +96,6 @@
             pkg-config
           ];
         };
-
-        typoCheck =
-          pkgs.runCommandNoCCLocal "check-typo"
-            {
-              src = ./.;
-              nativeBuildInputs = with pkgs; [ typos ];
-            }
-            ''
-              mkdir -p $out
-
-              cd $src
-              typos --config ./typos.toml
-            '';
-        fmtCheck =
-          let
-            restFmtCheck =
-              pkgs.runCommandNoCCLocal "check-fmt"
-                {
-                  src = ./.;
-                  nativeBuildInputs = with pkgs; [
-                    taplo
-                    nixfmt-rfc-style
-                    deno
-                    just
-                    shfmt
-                  ];
-                }
-                ''
-                  mkdir -p $out
-
-                  cd $src
-                  # just
-                  echo '==> just format check'
-                  just --unstable --fmt --check
-                  # markdown
-                  echo '==> markdown format check'
-                  find . -type f -regextype egrep -regex '^.*\.md$' -exec deno fmt --check --ext md {} +
-                  # toml
-                  echo '==> toml format check'
-                  find . -type f -regextype egrep -regex '^.*\.toml$' -exec taplo format --check {} +
-                  # yaml
-                  echo '==> yaml format check'
-                  find . -type f -regextype egrep -regex '^.*\.yml$' -exec deno fmt --check --ext yml {} +
-                  # nix
-                  echo '==> nix format check'
-                  find . -type f -regextype egrep -regex '^.*\.nix$' -exec nixfmt --check {} +
-                  # sh
-                  echo '==> sh format check'
-                  cd ./scripts && find . -type f -executable -exec shfmt -p -s -d -i 2 -ci -sr -kp -fn '{}' +
-                '';
-          in
-          pkgs.symlinkJoin {
-            name = "fmtCheck";
-            paths = [
-              restFmtCheck
-              (craneLib.cargoFmt commonArgs)
-            ];
-          };
       in
       {
         formatter = treefmtEval.config.build.wrapper;
